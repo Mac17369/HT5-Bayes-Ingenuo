@@ -49,13 +49,29 @@ plot(histo3, c = c3,add = TRUE)
 ###################
 
 corte <- sample(nrow(datos),nrow(datos)*porcentaje)
-train<-datos[corte,]
-test<-datos[-corte,]
+train<-datos[corte,mask]
+test<-datos[-corte,mask]
 
-
+t <- proc.time()
 modelo<-naiveBayes(as.factor(grupo)~., data=train, laplace =1)
 predBayes<-predict(modelo, newdata = test[,1:38])
-
 cm<-caret::confusionMatrix(predBayes,factor(test$grupo))
+proc.time()-t
 cm
 
+t <- proc.time()
+ct<-trainControl(method = "cv",train[,1:39],number=10, verboseIter=T)
+modeloCaret<-train(as.factor(grupo)~.,data=train,method="nb",trControl = ct)
+prediccionCaret<-predict(modeloCaret,newdata = test[,1:39])
+caret::confusionMatrix(prediccionCaret,factor(test$grupo))
+proc.time()-t
+caret
+
+t <- proc.time()
+ct<-trainControl(method = "cv",train[,1:39],number=10, verboseIter=T)
+modelorf<-train(as.factor(grupo)~.,data=train,method="rpart",trControl = ct)
+prediccionADVC<-predict(modelorf,newdata = test[,1:39])
+test$predADVC<-prediccionADVC
+cfmCaret <- confusionMatrix(test$predADVC,as.factor(test$grupo))
+proc.time()-t
+cfmCaret

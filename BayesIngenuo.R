@@ -65,7 +65,7 @@ modeloCaret<-train(as.factor(grupo)~.,data=train,method="nb",trControl = ct)
 prediccionCaret<-predict(modeloCaret,newdata = test[,1:39])
 caret::confusionMatrix(prediccionCaret,factor(test$grupo))
 proc.time()-t
-caret
+
 
 t <- proc.time()
 ct<-trainControl(method = "cv",train[,1:39],number=10, verboseIter=T)
@@ -75,3 +75,4 @@ test$predADVC<-prediccionADVC
 cfmCaret <- confusionMatrix(test$predADVC,as.factor(test$grupo))
 proc.time()-t
 cfmCaret
+
